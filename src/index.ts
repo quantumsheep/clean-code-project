@@ -1,1 +1,3 @@
-console.log('Clean code project');
+import * as api from "./api";
+
+api.start();
