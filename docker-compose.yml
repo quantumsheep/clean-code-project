@@ -1,8 +1,27 @@
 version: "3"
 
+networks:
+  mongo:
+
+volumes:
+  mongo_data:
+  mongo_log:
+
 services:
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo_data:/data/db/
+      - mongo_log:/var/log/mongodb/
+    networks:
+      - mongo
+
   clean-code:
     build: .
-    env_file: .env
+    networks:
+      - mongo
     ports:
       - 3000:3000
+    env_file: .env
+    environment:
+      MONGO_URI: ${MONGO_URI}
