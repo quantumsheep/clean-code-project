@@ -1,6 +1,7 @@
 import { model, Schema, Document } from '../db';
+import { IModel } from './model.interface';
 
-export interface IBook {
+export interface IBook extends IModel {
   name: string;
   author: string;
 }

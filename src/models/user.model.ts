@@ -1,6 +1,7 @@
 import { model, Schema, Document } from '../db';
+import { IModel } from './model.interface';
 
-export interface IUser {
+export interface IUser extends IModel {
   token: string;
   is_librarian: boolean;
   created_date: Date;
