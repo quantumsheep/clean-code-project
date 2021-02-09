@@ -6,7 +6,7 @@ import { UsersController } from './users.controller';
 const router = Router();
 
 router.get('/', librarianGuard, UsersController.getAll);
-router.post('/', librarianGuard, UsersController.create);
+router.post('/', UsersController.create);
 
 router.get('/me', authGuard, UsersController.getMe);
 

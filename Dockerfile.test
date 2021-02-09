@@ -6,6 +6,7 @@ COPY package*.json ./
 
 RUN npm ci
 
+COPY src .
 COPY tsconfig.json .
 
-CMD npm run start:dev
+CMD npm run test
