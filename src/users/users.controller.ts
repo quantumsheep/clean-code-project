@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { UserService } from "./users.service";
+import { BorrowingService } from "../borrowing/borrowing.service";
+import { TokenGuardData } from "./guards/token.guard";
+import { UsersService } from "./users.service";
 
-export namespace UserController {
+export namespace UsersController {
   export async function create(req: Request, res: Response) {
-    const user = await UserService.create();
+    const user = await UsersService.create();
     res.json(user);
   }
 
@@ -19,7 +21,7 @@ export namespace UserController {
       }
     }
 
-    const user = await UserService.update(id, {
+    const user = await UsersService.update(id, {
       is_librarian: body.is_librarian,
     });
 
@@ -27,7 +29,7 @@ export namespace UserController {
   }
 
   export async function getAll(req: Request, res: Response) {
-    const users = await UserService.get()
+    const users = await UsersService.get()
       .select(['_id', 'is_librarian', 'created_date'])
       .lean();
 
@@ -40,7 +42,7 @@ export namespace UserController {
 
   export async function getById(req: Request, res: Response) {
     const { id } = req.params;
-    const user = await UserService.getById(id).select(['_id', 'is_librarian', 'created_date']);
+    const user = await UsersService.getById(id).select(['_id', 'is_librarian', 'created_date']);
 
     if (!user) {
       return res.status(404).json({
@@ -49,13 +51,12 @@ export namespace UserController {
     }
 
     const data = user.toObject({ versionKey: false });
-
-    res.json(user);
+    res.json(data);
   }
 
   export async function getByIdFull(req: Request, res: Response) {
     const { id } = req.params;
-    const user = await UserService.getById(id);
+    const user = await UsersService.getById(id);
 
     if (!user) {
       return res.status(404).json({
@@ -64,5 +65,23 @@ export namespace UserController {
     }
 
     res.json(user.toObject({ versionKey: false }));
+  }
+
+  export async function getBorrowedBooks(req: Request & TokenGuardData, res: Response) {
+    const { id } = req.params;
+
+    if (id !== req.user._id && !req.user.is_librarian) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+      });
+    }
+
+    const borrowed = await BorrowingService.getByUser(id).lean();
+    res.json(borrowed);
+  }
+
+  export async function getMyBorrowedBooks(req: Request & TokenGuardData, res: Response) {
+    const borrowed = await BorrowingService.getByUser(req.user._id).lean();
+    res.json(borrowed);
   }
 }

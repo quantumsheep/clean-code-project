@@ -1,19 +1,14 @@
 import { ParsedQs } from 'qs';
-import { UserService } from "../users.service";
+import { UsersService } from "../users.service";
 import { MiddlewareFunction } from "../../middlewares/middleware.interface";
 import { IUser } from '../../models/user.model';
 import { Request, Response } from 'express';
 
 function getTokenQuery(token: string | ParsedQs | string[] | ParsedQs[]): string {
-  if (Array.isArray(token)) {
-    return getTokenQuery(token[0]);
-  } else {
-    return token as string;
-  }
+  return (Array.isArray(token) ? token[0] : token) as string;
 }
 
 function getTokenHeader(authorization: string) {
-  console.log('authorization', authorization)
   const bearer = 'Bearer ';
 
   if (authorization?.startsWith?.(bearer)) {
@@ -32,7 +27,7 @@ export const tokenGuard: MiddlewareFunction = async (req, res, next) => {
   const token = getTokenQuery(req.query.token) ?? getTokenHeader(req.headers.authorization);
 
   if (token) {
-    const user = await UserService.getByToken(token);
+    const user = await UsersService.getByToken(token);
 
     if (user) {
       req.user = user.toObject({ versionKey: false });

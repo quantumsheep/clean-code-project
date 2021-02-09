@@ -11,4 +11,9 @@ export const BookSchema = new Schema({
   author: { type: String, required: true },
 });
 
+BookSchema.index({
+  name: 'text',
+  author: 'text',
+});
+
 export const BookModel = model<IBook & Document>('book', BookSchema);

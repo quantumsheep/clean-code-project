@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { IUser, UserModel } from "../models/user.model";
 
-export namespace UserService {
+export namespace UsersService {
   export function get() {
     return UserModel.find();
   }
@@ -26,7 +26,7 @@ export namespace UserService {
     const user = await getById(_id);
 
     if (user) {
-      user.set(data);
+      await user.set(data).save();
     }
 
     return user?.toObject?.({ versionKey: false });
